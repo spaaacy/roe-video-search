@@ -25,6 +25,8 @@ export default function VideoUploader({ setVideo, setLoading }: VideoUploaderPro
         const { error } = await response.json();
         throw error;
       }
+      const { transcription } = await response.json();
+      console.log(transcription);
       const videoURL = URL.createObjectURL(file);
       setVideo(videoURL);
     } catch (error) {
