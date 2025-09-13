@@ -8,7 +8,7 @@ import Loader from "@/components/Loader";
 import VideoPlayer from "@/components/VideoPlayer";
 
 export default function Home() {
-  const [video, setVideo] = useState<string>();
+  const [video, setVideo] = useState<{ url: string; name: string }>();
   const [loading, setLoading] = useState(false);
 
   return (
@@ -17,7 +17,7 @@ export default function Home() {
       {loading ? (
         <Loader />
       ) : video ? (
-        <VideoPlayer video={video} />
+        <VideoPlayer video={video} setVideo={setVideo} />
       ) : (
         <VideoUploader setVideo={setVideo} setLoading={setLoading} />
       )}

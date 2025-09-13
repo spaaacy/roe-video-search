@@ -20,5 +20,6 @@ from core import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('upload-video/', views.upload_video, name='upload_video')
+    path('upload-video/', views.upload_video, name='upload_video'),
+    path('query-video/', views.query_video, name='query_video')
 ]

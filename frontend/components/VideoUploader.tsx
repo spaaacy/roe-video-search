@@ -3,7 +3,15 @@
 import { Dispatch, SetStateAction } from "react";
 
 interface VideoUploaderProps {
-  setVideo: Dispatch<SetStateAction<string | undefined>>;
+  setVideo: Dispatch<
+    SetStateAction<
+      | {
+          url: string;
+          name: string;
+        }
+      | undefined
+    >
+  >;
   setLoading: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -28,7 +36,7 @@ export default function VideoUploader({ setVideo, setLoading }: VideoUploaderPro
       const { transcription } = await response.json();
       console.log(transcription);
       const videoURL = URL.createObjectURL(file);
-      setVideo(videoURL);
+      setVideo({ url: videoURL, name: file.name });
     } catch (error) {
       console.error(error);
     } finally {
