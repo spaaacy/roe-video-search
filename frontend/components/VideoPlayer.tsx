@@ -1,8 +1,11 @@
+import formatTime from "@/utils/formatTime";
 import { Dispatch, FormEvent, SetStateAction, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { BiArrowBack } from "react-icons/bi";
 import { FaSearch } from "react-icons/fa";
 
 interface VideoPlayerProps {
+  
   video: { url: string; name: string };
   setVideo: Dispatch<
     SetStateAction<
@@ -28,7 +31,6 @@ const VideoPlayer = ({ video, setVideo }: VideoPlayerProps) => {
   const queryVideo = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      console.log(search);
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/query-video/`, {
         method: "POST",
         headers: {
@@ -39,6 +41,7 @@ const VideoPlayer = ({ video, setVideo }: VideoPlayerProps) => {
       if (response.ok) {
         const { chunk }: { chunk: Chunk } = await response.json();
         if (videoRef.current) videoRef.current.currentTime = chunk.start;
+        toast.success(`Redirecting to ${formatTime(chunk.start)}`)
       } else {
         const { error } = await response.json();
         throw error;
