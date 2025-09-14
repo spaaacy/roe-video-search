@@ -7,6 +7,7 @@ import { useState } from "react";
 import Loader from "@/components/Loader";
 import VideoPlayer from "@/components/VideoPlayer";
 import { Toaster } from "react-hot-toast";
+import Chatbox from "@/components/Chatbox";
 
 export default function Home() {
   const [video, setVideo] = useState<{ url: string; name: string }>();

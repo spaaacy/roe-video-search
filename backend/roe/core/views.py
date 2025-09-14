@@ -120,5 +120,38 @@ def query_video(request):
         best_chunk = chunks[I[0][0]]
 
         return JsonResponse({"chunk": best_chunk, "status": "success"})
+
+@csrf_exempt
+def chat_with_video(request):
+    if request.method == "POST":
+        body = json.loads(request.body)
+        query = body.get('query')
+        video_id = body.get("videoName")
+        
+        if not query or not video_id:
+            return JsonResponse({"message": "query and video_id required", "status": "error"}, status=400)
+
+        if video_id not in video_indexes:
+            return JsonResponse({"message": "Video not found", "status": "error"}, status=404)
+
+        index = video_indexes[video_id]
+        chunks = video_chunks[video_id]
+        
+        query_embedding = embed_text(query)
+        I, I = index.search(np.array([query_embedding]), k=1)
+    
+        best_chunk = chunks[I[0][0]]
+
+        response = client.responses.create(
+            model="gpt-4.1",
+            input=f"Using this context: {best_chunk["text"]}\nAnswer this query: {query}\n"
+            "Please respond with plain text only, without any formatting or decorations."
+        )
+
+        message = response.output[0].content[0].text
+        
+        print(response.output[0].content[0].text)
+
+        return JsonResponse({"message": message, "status": "success"})
     
     return JsonResponse({"message": "Invalid request", "status": "error"}, status=400)
