@@ -22,11 +22,13 @@ const VideoPlayer = ({ video, setVideo }: VideoPlayerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [message, setMessage] = useState<string>("");
   const [query, setQuery] = useState("");
-  const [timestamp, setTimestamp] = useState<number>();
+  const [timestamp, setTimestamp] = useState<number | undefined>();
 
   // Fetch timestamp and redirect
   const queryVideo = async () => {
     try {
+      setMessage("")
+      setTimestamp(undefined)
       setSearch("");
       setQuery(search);
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/query-video/`, {
@@ -105,14 +107,15 @@ const VideoPlayer = ({ video, setVideo }: VideoPlayerProps) => {
         controls
         src={video.url}
       />
-      {message && timestamp && (
-        <p className="mr-auto py-4 px-8 rounded-xl border border-gray-200 w-full flex flex-col gap-2">
+
+      {message.length > 0 && (timestamp || timestamp === 0) && query && (
+        <div className="mr-auto py-4 px-8 rounded-xl border border-gray-200 w-full flex flex-col gap-2">
           <p className="flex items-center gap-2 font-semibold">
             <span className="px-2 rounded-full border border-gray-300 font-normal">{formatTime(timestamp!)}</span>
             {query.charAt(0).toUpperCase() + query.slice(1)}
           </p>
           {message}
-        </p>
+        </div>
       )}
     </div>
   );

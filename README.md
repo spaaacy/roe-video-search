@@ -56,9 +56,11 @@ OPENAI_API_KEY=your_openai_api_key_here
 - dotenv — environment variable management
 - numpy — numerical computing
 - faiss — vector similarity search
+- django-cors-headers — handling Cross-Origin Resource Sharing (CORS)
 
 ### Run Dev Server
 ```
+cd roe
 python manage.py runserver
 ```
 

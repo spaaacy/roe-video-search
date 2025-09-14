@@ -1,0 +1,7 @@
+Django
+openai
+pydub
+python-dotenv
+numpy
+faiss-cpu
+django-cors-headers
