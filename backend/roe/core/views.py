@@ -34,7 +34,6 @@ def upload_video(request):
             video_id = video_file.name
 
             # Upload video to OpenAI Whisper for transcription
-
             yield json.dumps({"status": "processing", "message": f"Transcribing {video_id}"}) + "\n"
 
             try:
@@ -60,7 +59,6 @@ def upload_video(request):
                 return
 
             # Create embeddings for transcription segments
-
             yield json.dumps({"status": "processing", "message": "Creating embeddings"}) + "\n"
 
             try:
@@ -78,7 +76,6 @@ def upload_video(request):
                 return
 
             # Store embeddings in vector database (FAISS)
-            
             yield json.dumps({"status": "processing", "message": "Indexing embeddings"}) + "\n"
 
             try:
@@ -114,6 +111,7 @@ def query_video(request):
         index = video_indexes[video_id]
         chunks = video_chunks[video_id]
         
+        # Fetch relevent embedding with timestamp
         query_embedding = embed_text(query)
         _, I = index.search(np.array([query_embedding]), k=1)
     
@@ -137,11 +135,13 @@ def chat_with_video(request):
         index = video_indexes[video_id]
         chunks = video_chunks[video_id]
         
+        # Fetch relevent embedding
         query_embedding = embed_text(query)
         I, I = index.search(np.array([query_embedding]), k=1)
     
         best_chunk = chunks[I[0][0]]
 
+        # Pass query and context to GPT
         response = client.responses.create(
             model="gpt-4.1",
             input=f"Using this context: {best_chunk["text"]}\nAnswer this query: {query}\n"
@@ -150,8 +150,6 @@ def chat_with_video(request):
 
         message = response.output[0].content[0].text
         
-        print(response.output[0].content[0].text)
-
         return JsonResponse({"message": message, "status": "success"})
     
     return JsonResponse({"message": "Invalid request", "status": "error"}, status=400)

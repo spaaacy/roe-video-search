@@ -16,10 +16,13 @@ interface VideoUploaderProps {
   >;
 }
 
+type Update = { status: string; message: string | undefined; file: { name: string } | undefined }
+
 export default function VideoUploader({ setVideo }: VideoUploaderProps) {
   const [status, setStatus] = useState<string>();
   const [loading, setLoading] = useState(false);
 
+  // Upload file to api endpoint
   const uploadFile = async (file: File) => {
     if (!file) return;
 
@@ -47,7 +50,6 @@ export default function VideoUploader({ setVideo }: VideoUploaderProps) {
       setStatus(`Uploading ${file.name}`);
 
       // Call endpoint passing video
-      
       const formData = new FormData();
       formData.append("video", file);
 
@@ -61,8 +63,7 @@ export default function VideoUploader({ setVideo }: VideoUploaderProps) {
         throw error;
       }
 
-      // Listen to updates
-      
+      // Listen to progress updates
       const reader = response.body?.getReader();
       if (!reader) throw new Error("Failed to read response stream");
 
@@ -79,26 +80,23 @@ export default function VideoUploader({ setVideo }: VideoUploaderProps) {
         for (let i = 0; i < chunks.length - 1; i++) {
           const chunk = chunks[i];
           if (chunk.trim()) {
-            const update = JSON.parse(chunk);
-
+            const update: Update = JSON.parse(chunk);
             // Set video if successful
             if (update.status === "success") {
-              console.log(videoURL)
               setVideo({ url: videoURL, name: file.name });
-            // Throw error
+              // Throw error
             } else if (update.status === "error") {
-              toast.error(update.message);
+              toast.error(update.message!);
               break;
-            // Set updates
+              // Set updates
             } else {
-              setStatus(update.message);
+              setStatus(update.message!);
             }
           }
         }
         streamedData = chunks[chunks.length - 1]; // Keep the last incomplete chunk
       }
     } catch (error) {
-      toast.error("Oops, something went wrong...");
       console.error(error);
     } finally {
       setLoading(false);
